@@ -1,0 +1,34 @@
+{
+  "name": "swags-for-devs-backend",
+  "version": "1.0.0",
+  "description": "Prove that the user is a contributor to a given repo using reclaim protocol",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
+    "migrate": "node-pg-migrate"
+  },
+  "keywords": [],
+  "author": "aman",
+  "license": "ISC",
+  "dependencies": {
+    "@questbookapp/reclaim-crypto-sdk": "^0.0.1",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "i": "^0.3.7",
+    "node-pg-migrate": "^6.2.2",
+    "npm": "^9.5.1",
+    "pg": "^8.9.0",
+    "template-client-sdk": "^1.0.6"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.14.0",
+    "@types/pg": "^8.6.6",
+    "typescript": "^4.9.5"
+  }
+}

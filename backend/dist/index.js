@@ -1,0 +1,123 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const template_client_sdk_1 = require("template-client-sdk");
+const pg_1 = require("pg");
+const cors_1 = __importDefault(require("cors"));
+dotenv_1.default.config();
+const app = (0, express_1.default)();
+const port = process.env.PORT || 8000;
+const callbackUrl = process.env.CALLBACK_URL + 'callback/';
+app.use(express_1.default.json());
+app.use((0, cors_1.default)());
+const pool = new pg_1.Pool({
+    connectionString: process.env.DATABASE_URL,
+});
+const reclaim = new template_client_sdk_1.Reclaim(callbackUrl);
+const isValidRepo = (repoStr) => {
+    return repoStr.indexOf('/') > -1 && repoStr.split('/').length === 2;
+};
+app.get('/home/repo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { repo } = req.query;
+    const repoFullName = repo;
+    if (!isValidRepo(repoFullName)) {
+        throw new Error('Invalid repo');
+    }
+    const callbackId = 'repo-' + (0, template_client_sdk_1.generateUuid)();
+    const template = (yield reclaim.getConsent('Github-contributor', [
+        {
+            provider: 'github-contributor',
+            params: {
+                repo: repoFullName,
+            },
+        },
+    ])).generateTemplate(callbackId);
+    const url = template.url;
+    const templateId = template.id;
+    try {
+        yield pool.query('INSERT INTO submitted_links (callback_id, status, repo, template_id) VALUES ($1, $2, $3, $4)', [callbackId, 'pending', repoFullName, templateId]);
+    }
+    catch (e) {
+        res.send(`500 - Internal Server Error - ${e}`);
+        return;
+    }
+    res.json({ url, callbackId });
+}));
+app.post('/callback/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.params.id) {
+        res.send(`400 - Bad Request: callbackId is required`);
+        return;
+    }
+    if (!req.body.claims) {
+        res.send(`400 - Bad Request: claims are required`);
+        return;
+    }
+    const callbackId = req.body.id;
+    const claims = { claims: req.body.claims };
+    try {
+        const results = yield pool.query('SELECT callback_id FROM submitted_links WHERE callback_id = $1', [callbackId]);
+        if (results.rows.length === 0) {
+            res.send(`404 - Not Found: callbackId not found`);
+            return;
+        }
+    }
+    catch (e) {
+        res.send(`500 - Internal Server Error - ${e}`);
+        return;
+    }
+    try {
+        yield pool.query('UPDATE submitted_links SET claims = $1, status = $2 WHERE callback_id = $3;', [JSON.stringify(claims), 'verified', callbackId]);
+    }
+    catch (e) {
+        res.send(`500 - Internal Server Error - ${e}`);
+        return;
+    }
+    res.send('200 - OK');
+}));
+app.get('/status/:callbackId', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    let statuses;
+    if (!req.params.callbackId) {
+        res.send(`400 - Bad Request: callbackId is required`);
+        return;
+    }
+    const callbackId = req.params.callbackId;
+    try {
+        const results = yield pool.query('SELECT callback_id FROM submitted_links WHERE callback_id = $1', [callbackId]);
+        if (results.rows.length === 0) {
+            res.send(`404 - Not Found: callbackId not found`);
+            return;
+        }
+    }
+    catch (e) {
+        res.send(`500 - Internal Server Error - ${e}`);
+        return;
+    }
+    try {
+        statuses = yield pool.query('SELECT status FROM submitted_links WHERE callback_id = $1', [callbackId]);
+    }
+    catch (e) {
+        res.send(`500 - Internal Server Error - ${e}`);
+        return;
+    }
+    res.json({ status: (_a = statuses === null || statuses === void 0 ? void 0 : statuses.rows[0]) === null || _a === void 0 ? void 0 : _a.status });
+}));
+process.on('uncaughtException', function (err) {
+    console.log('Caught exception: ', err);
+});
+app.listen(port, () => {
+    console.log(`Server is running at http://localhost:${port}`);
+});
