@@ -24,7 +24,7 @@ export default function ScanPage({
 	const canvasElmRef = useRef<HTMLCanvasElement>(null)
 	const imageElmRef = useRef<HTMLCanvasElement>(null)
 	const drawElmRef = useRef<HTMLCanvasElement>(null)
-	const uploadBtnRef = useRef<HTMLInputElement>(null)
+	const uploadBtnRef = useRef<HTMLInputElement | null>(null)
 	const [repo, setRepo] = useState<string | null>(null)
 
 	const handleSetRepo = async (str: string) => {
@@ -43,12 +43,22 @@ export default function ScanPage({
 
 	useEffect(() => {
 		if (!repo) return
-		proveIt(repo)
+		proveIt(repo).catch(() => setRepo(null))
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [repo])
 
 	const handleUpload = () => {
 		if (!uploadBtnRef.current) return
 		uploadBtnRef.current.click()
+	}
+
+	const clearImage = (
+		ctx: CanvasRenderingContext2D | null,
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {
+		ctx && ctx.clearRect(0, 0, 0, 0)
+		setRepo(null)
+		event.target.value = ''
 	}
 
 	const handleFileInputChange = async (
@@ -76,14 +86,16 @@ export default function ScanPage({
 						const data = ctx.getImageData(0, 0, img.width, img.height).data
 						const code = jsQR(data, canvasElm.width, canvasElm.height)
 						if (code?.data) {
-							handleSetRepo(code.data).catch((e) =>
-								alert(e?.message || 'Something went wrong')
-							)
+							handleSetRepo(code.data).catch((err) => {
+								alert(err?.message || 'Something went wrong')
+								clearImage(ctx, e)
+							})
 						} else {
 							alert('No data found')
+							clearImage(ctx, e)
 						}
 					}
-					 
+
 					img.src = reader.result as string
 				}
 			}
@@ -115,11 +127,11 @@ export default function ScanPage({
 	}, [streamStatus, streamingErr])
 
 	return (
-		<div className="flex justify-start gap-2 w-full h-full flex-col items-center app">
+		<div className="flex justify-start gap-2 w-full h-full flex-col items-center app text-center">
 			<header
 				className={`App-header p-2  ${callbackUrl ? 'bg-[#282c34]' : 'bg-[#fff]'}`}
 			>
-				<h1>Prove that you've contributed to a github repo</h1>
+				<h1 className="mb-2">Prove that you've contributed to a github repo</h1>
 
 				{callbackUrl ? (
 					<div className="links text-center">

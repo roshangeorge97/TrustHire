@@ -4,7 +4,9 @@ import './App.css'
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 import ScanPage from './pages/ScanPage'
 import { QRCodeSVG } from 'qrcode.react'
-
+import Toaster from './components/Toaster'
+import { toast } from 'react-hot-toast'
+import { handleError } from './utils'
 const getCallbackUrl = process.env.REACT_APP_BACKEND_BASE_URL + '/home'
 const statusUrl = process.env.REACT_APP_BACKEND_BASE_URL + '/status'
 
@@ -33,19 +35,27 @@ function App() {
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		const repoFullName = input.owner + '/' + input.repo
-		proveIt(repoFullName)
+		proveIt(repoFullName).catch((e) => console.log(handleError(e)))
+	}
+
+	const getCallback = async (repo: string) => {
+		return toast.promise(
+			axios.get(getCallbackUrl + '/repo', {
+				params: { repo },
+			}),
+			{
+				loading: 'Loading..',
+				error: (error) => handleError(error),
+				success: 'Success',
+			}
+		)
 	}
 
 	const proveIt = async (repo: string) => {
-		const response = await axios.get(getCallbackUrl + '/repo', {
-			params: {
-				repo,
-			},
-		})
-
+		const response = await getCallback(repo)
 		setCallbackId(response.data.callbackId)
 		setCallbackUrl(response.data.url)
-		setLoading(true) 
+		setLoading(true)
 		setAppUrl(response.data.url)
 	}
 
@@ -67,109 +77,110 @@ function App() {
 	}
 
 	return (
-		<BrowserRouter>
-			<Routes>
-				<Route
-					path="/"
-					element={
-						<div className="App">
-							<header className="App-header bg-[#282c34]">
-								<h1>Prove that you've contributed to a github repo</h1>
+		<>
+			<BrowserRouter>
+				<Routes>
+					<Route
+						path="/"
+						element={
+							<div className="App">
+								<header className="App-header bg-[#282c34]">
+									<h1>Prove that you've contributed to a github repo</h1>
 
-								{!callbackUrl ? (
-									<>
-										<form className="actions" onSubmit={onSubmit}>
-											<input
-												name="owner"
-												required
-												onChange={handleChange}
-												placeholder="Organization name eg:questbook"
-												value={input.owner}
-												className="username-input"
-											/>
+									{!callbackUrl ? (
+										<>
+											<form className="actions" onSubmit={onSubmit}>
+												<input
+													name="owner"
+													required
+													onChange={handleChange}
+													placeholder="Organization name eg:questbook"
+													value={input.owner}
+													className="username-input"
+												/>
 
-											<input
-												name="repo"
-												required
-												onChange={handleChange}
-												placeholder="Repo name eg:reclaim-sdk"
-												value={input.repo}
-												className="username-input"
-											/>
+												<input
+													name="repo"
+													required
+													onChange={handleChange}
+													placeholder="Repo name eg:reclaim-sdk"
+													value={input.repo}
+													className="username-input"
+												/>
 
-											<button type="submit" className="button" disabled={!!callbackUrl}>
-												Claim it!
-											</button>
-										</form>
+												<button type="submit" className="button" disabled={!!callbackUrl}>
+													Claim it!
+												</button>
+											</form>
 
-										<h1>OR</h1>
+											<h1>OR</h1>
 
-										<Link to="/scan">
-											<button type="button" className="button">
-												Scan
-											</button>
-										</Link>
-									</>
-								) : (
-									<div className="links">
-										<div>
-											If you don't have our app installed, check the installation steps{' '}
-											<a
-												target="_blank"
-												rel="noreferrer"
-												className="App-link"
-												href="https://questbook.gitbook.io/reclaim-protocol/installing-reclaim-wallet"
-											>
-												here
-											</a>
-										</div>
-									</div>
-								)}
-
-								{status === 'verified' ? (
-									<h3>Thanks for submitting your link!</h3>
-								) : loading ? (
-									<>
-										<div className="loader"></div>
-										{appUrl && (
-											<>
-												<h3>On mobile device?</h3>
+											<Link to="/scan">
+												<button type="button" className="button">
+													Scan
+												</button>
+											</Link>
+										</>
+									) : (
+										<div className="links">
+											<div>
+												If you don't have our app installed, check the installation steps{' '}
 												<a
-													href={appUrl}
 													target="_blank"
 													rel="noreferrer"
 													className="App-link"
+													href="https://questbook.gitbook.io/reclaim-protocol/installing-reclaim-wallet"
 												>
-													Click here to open on Reclaim Wallet App
+													here
 												</a>
-												<h3>On laptop/desktop?</h3>
-												<QRCodeSVG value={appUrl} />
-												<p>or, Copy the link and send to your phone</p>
-												<input readOnly className="text-black" value={appUrl} />
-											</>
-										)}
-									</>
-								) : null}
-							</header>
-						</div>
-					}
-				/>
-				<Route
-					path="/scan"
-					element={
-						<ScanPage
-							proveIt={proveIt}
-							status={status}
-							appUrl={appUrl}
-							callbackUrl={callbackUrl}
-							loading={loading}
-						/>
-					}
-				/>
-			</Routes>
-		</BrowserRouter>
+											</div>
+										</div>
+									)}
 
-		 
+									{status === 'verified' ? (
+										<h3>Thanks for submitting your link!</h3>
+									) : loading ? (
+										<>
+											<div className="loader"></div>
+											{appUrl && (
+												<>
+													<h3>On mobile device?</h3>
+													<a
+														href={appUrl}
+														target="_blank"
+														rel="noreferrer"
+														className="App-link"
+													>
+														Click here to open on Reclaim Wallet App
+													</a>
+													<h3>On laptop/desktop?</h3>
+													<QRCodeSVG value={appUrl} />
+													<p>or, Copy the link and send to your phone</p>
+													<input readOnly className="text-black" value={appUrl} />
+												</>
+											)}
+										</>
+									) : null}
+								</header>
+							</div>
+						}
+					/>
+					<Route
+						path="/scan"
+						element={
+							<ScanPage
+								proveIt={proveIt}
+								status={status}
+								appUrl={appUrl}
+								callbackUrl={callbackUrl}
+								loading={loading}
+							/>
+						}
+					/>
+				</Routes>
+			</BrowserRouter>
+			<Toaster />
+		</>
 	)
 }
 
