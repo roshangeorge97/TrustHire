@@ -13,16 +13,15 @@
   "author": "aman",
   "license": "ISC",
   "dependencies": {
-    "@questbookapp/reclaim-crypto-sdk": "^0.0.1",
+    "@reclaimprotocol/reclaim-crypto-sdk": "^0.0.1",
+    "@reclaimprotocol/template-client-sdk": "^1.0.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "i": "^0.3.7",
     "node-pg-migrate": "^6.2.2",
     "npm": "^9.5.1",
-    "pg": "^8.9.0",
-    "template-client-sdk": "^1.0.6"
+    "pg": "^8.9.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
