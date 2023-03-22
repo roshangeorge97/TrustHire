@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const template_client_sdk_1 = require("template-client-sdk");
+const template_client_sdk_1 = require("@reclaimprotocol/template-client-sdk");
 const pg_1 = require("pg");
 const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
