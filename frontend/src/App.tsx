@@ -134,8 +134,8 @@ function App() {
 										Click here to open on Reclaim Wallet App
 									</a>
 									<h3>On laptop/desktop?</h3>
-									<div className='bg-white p-1'>
-									<QRCodeSVG value={appUrl} size={250} />
+									<div className="bg-white p-1">
+										<QRCodeSVG value={appUrl} size={250} />
 									</div>
 									<p>or, Copy the link and send to your phone</p>
 									<input readOnly className="text-black" value={appUrl} />
