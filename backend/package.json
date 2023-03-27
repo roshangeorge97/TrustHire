@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@reclaimprotocol/reclaim-crypto-sdk": "^0.0.1",
-    "@reclaimprotocol/template-client-sdk": "^1.0.0",
+    "@reclaimprotocol/reclaim-sdk": "^1.0.3",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",

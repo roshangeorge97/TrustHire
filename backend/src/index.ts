@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv'   
-import { Reclaim, generateUuid } from '@reclaimprotocol/template-client-sdk'
+import { Reclaim, generateUuid } from '@reclaimprotocol/reclaim-sdk'
 import { Pool } from 'pg'
 import cors from 'cors'
 

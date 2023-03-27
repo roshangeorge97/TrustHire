@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const template_client_sdk_1 = require("@reclaimprotocol/template-client-sdk");
+const reclaim_sdk_1 = require("@reclaimprotocol/reclaim-sdk");
 const pg_1 = require("pg");
 const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
@@ -26,7 +26,7 @@ app.use((0, cors_1.default)());
 const pool = new pg_1.Pool({
     connectionString: process.env.DATABASE_URL,
 });
-const reclaim = new template_client_sdk_1.Reclaim(callbackUrl);
+const reclaim = new reclaim_sdk_1.Reclaim(callbackUrl);
 const isValidRepo = (repoStr) => {
     return repoStr.indexOf('/') > -1 && repoStr.split('/').length === 2;
 };
@@ -36,7 +36,7 @@ app.get('/home/repo', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     if (!isValidRepo(repoFullName)) {
         throw new Error('Invalid repo');
     }
-    const callbackId = 'repo-' + (0, template_client_sdk_1.generateUuid)();
+    const callbackId = 'repo-' + (0, reclaim_sdk_1.generateUuid)();
     const template = (yield reclaim.getConsent('Github-contributor', [
         {
             provider: 'github-contributor',
