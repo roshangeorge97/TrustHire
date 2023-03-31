@@ -1,5 +1,5 @@
 import express, { Express, Request, Response } from 'express'
-import dotenv from 'dotenv'   
+import dotenv from 'dotenv'
 import { Reclaim, generateUuid } from '@reclaimprotocol/reclaim-sdk'
 import { Pool } from 'pg'
 import cors from 'cors'
@@ -22,6 +22,10 @@ const reclaim = new Reclaim(callbackUrl)
 const isValidRepo = (repoStr: string) => {
 	return repoStr.indexOf('/') > -1 && repoStr.split('/').length === 2
 }
+
+app.get('/', (req: Request, res: Response) => {
+res.send('works!')
+})
 
 app.get('/home/repo', async (req: Request, res: Response) => {
 	const { repo } = req.query
