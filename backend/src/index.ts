@@ -17,6 +17,8 @@ const pool = new Pool({
 	connectionString: process.env.DATABASE_URL,
 })
 
+console.log('env',process.env)
+
 const reclaim = new Reclaim(callbackUrl)
 
 const isValidRepo = (repoStr: string) => {
