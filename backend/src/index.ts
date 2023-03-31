@@ -8,7 +8,7 @@ dotenv.config()
 
 const app: Express = express()
 const port = process.env.PORT || 8000
-const callbackUrl = process.env.CALLBACK_URL!
+const callbackUrl = process.env.CALLBACK_URL! + '/' + 'callback/'
 
 app.use(express.json())
 app.use(cors())
@@ -17,7 +17,6 @@ const pool = new Pool({
 	connectionString: process.env.DATABASE_URL,
 })
 
-
 const reclaim = new Reclaim(callbackUrl)
 
 const isValidRepo = (repoStr: string) => {
@@ -25,7 +24,7 @@ const isValidRepo = (repoStr: string) => {
 }
 
 app.get('/', (req: Request, res: Response) => {
-res.send('works!')
+	res.send('works!')
 })
 
 app.get('/home/repo', async (req: Request, res: Response) => {
