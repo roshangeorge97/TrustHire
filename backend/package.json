@@ -4,7 +4,7 @@
   "description": "Prove that the user is a contributor to a given repo using reclaim protocol",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node-pg-migrate up",
     "start": "node dist/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
     "migrate": "node-pg-migrate"
