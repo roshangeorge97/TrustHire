@@ -66,7 +66,7 @@ function App() {
 
 	const proveIt = async (input: Inputs) => {
 		const response = await getCallback(input)
-		if(response.statusText !== 'OK') {
+		if(response.status !== 200) {
 			throw new Error('Something went wrong')
 		}
 		setCallbackId(response.data.callbackId)
