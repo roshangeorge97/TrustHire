@@ -105,7 +105,6 @@ app.get('/status/:callbackId', async (req: Request, res: Response) => {
 	res.json({ status: statuses?.rows[0]?.status })
 })
 
-app.use(express.text())
 
 app.post('/callback/:id', async (req: Request, res: Response) => {
 	if (!req.params.id) {
