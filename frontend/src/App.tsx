@@ -9,8 +9,8 @@ const getCallbackUrl = process.env.REACT_APP_BACKEND_BASE_URL + '/home'
 const statusUrl = process.env.REACT_APP_BACKEND_BASE_URL + '/status'
 
 type Inputs = {
-	owner: string
-	repo: string
+	email: string
+	repoLink: string
 }
 
 function App() {
@@ -21,18 +21,29 @@ function App() {
 	const [appUrl, setAppUrl] = React.useState<string | null>(null)
 
 	const [input, setInput] = useState<Inputs>({
-		owner: '',
-		repo: '',
+		email: '',
+		repoLink: '',
 	})
+
+	// const []
 
 	const getStatus = async (callbackId: string) => {
 		const response = await axios.get(statusUrl + `/${callbackId}`)
 		setStatus(response.data.status)
 	}
 
+	function extractGitHubRepoPath(url: string) {
+		const match = url.match(
+			/^https?:\/\/(www\.)?github.com\/(?<owner>[\w.-]+)\/(?<name>[\w.-]+)/
+		)
+		if (!match || !(match.groups?.owner && match.groups?.name)) return null
+		return `${match.groups.owner}/${match.groups.name}`
+	}
+
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-		const repoFullName = input.owner + '/' + input.repo
+		const repoFullName = extractGitHubRepoPath(input.repoLink)
+		if (!repoFullName) return toast.error('Invalid repository link')
 		proveIt(repoFullName).catch((e) => console.log(handleError(e)))
 	}
 
@@ -84,20 +95,22 @@ function App() {
 						<>
 							<form className="actions" onSubmit={onSubmit}>
 								<input
-									name="owner"
+									type="email"
+									name="email"
 									required
 									onChange={handleChange}
-									placeholder="Organization name eg:questbook"
-									value={input.owner}
+									placeholder="Email id"
+									value={input.email}
 									className="username-input"
 								/>
 
 								<input
-									name="repo"
+									type="text"
+									name="repoLink"
 									required
 									onChange={handleChange}
-									placeholder="Repo name eg:reclaim-sdk"
-									value={input.repo}
+									placeholder="Repository link"
+									value={input.repoLink}
 									className="username-input"
 								/>
 
