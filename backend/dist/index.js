@@ -20,7 +20,7 @@ const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 8000;
-const callbackUrl = process.env.CALLBACK_URL + 'callback/';
+const callbackUrl = process.env.CALLBACK_URL + '/' + 'callback/';
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 const pool = new pg_1.Pool({
@@ -30,11 +30,20 @@ const reclaim = new reclaim_sdk_1.Reclaim(callbackUrl);
 const isValidRepo = (repoStr) => {
     return repoStr.indexOf('/') > -1 && repoStr.split('/').length === 2;
 };
+app.get('/', (req, res) => {
+    res.send('works!');
+});
 app.get('/home/repo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { repo } = req.query;
+    const { repo, email } = req.params;
+    if (!repo || !email) {
+        res.send(`400 - Bad Request: repository name and email are required`);
+        return;
+    }
     const repoFullName = repo;
+    const emailStr = email;
     if (!isValidRepo(repoFullName)) {
-        throw new Error('Invalid repo');
+        res.send(`400 - Bad Request: invalid repository name`);
+        return;
     }
     const callbackId = 'repo-' + (0, reclaim_sdk_1.generateUuid)();
     const template = (yield reclaim.getConsent('Github-contributor', [
@@ -48,7 +57,7 @@ app.get('/home/repo', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const url = template.url;
     const templateId = template.id;
     try {
-        yield pool.query('INSERT INTO submitted_links (callback_id, status, repo, template_id) VALUES ($1, $2, $3, $4)', [callbackId, 'pending', repoFullName, templateId]);
+        yield pool.query('INSERT INTO submitted_links (callback_id, status, repo, email, template_id) VALUES ($1, $2, $3, $4)', [callbackId, 'pending', repoFullName, emailStr, templateId]);
     }
     catch (e) {
         res.send(`500 - Internal Server Error - ${e}`);
@@ -61,12 +70,13 @@ app.post('/callback/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.send(`400 - Bad Request: callbackId is required`);
         return;
     }
-    if (!req.body.claims) {
+    const reqBody = JSON.parse(decodeURIComponent(req.body));
+    if (!reqBody.claims || !reqBody.claims.length) {
         res.send(`400 - Bad Request: claims are required`);
         return;
     }
-    const callbackId = req.body.id;
-    const claims = { claims: req.body.claims };
+    const callbackId = req.params.id;
+    const claims = { claims: reqBody.claims };
     try {
         const results = yield pool.query('SELECT callback_id FROM submitted_links WHERE callback_id = $1', [callbackId]);
         if (results.rows.length === 0) {
@@ -85,7 +95,7 @@ app.post('/callback/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.send(`500 - Internal Server Error - ${e}`);
         return;
     }
-    res.send('200 - OK');
+    res.send(`<h3>Success!</h3>`);
 }));
 app.get('/status/:callbackId', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;

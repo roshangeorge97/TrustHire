@@ -28,16 +28,16 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.get('/home/repo', async (req: Request, res: Response) => {
-	const { repo, email } = req.params
+	const { repo, email } = req.query
 	if (!repo || !email) {
-		res.send(`400 - Bad Request: repository name and email are required`)
+		res.status(400).send(`400 - Bad Request: repo and email are required`)
 		return
 	}
 	const repoFullName = repo as string
 	const emailStr = email as string
 
 	if (!isValidRepo(repoFullName)) {
-		res.send(`400 - Bad Request: invalid repository name`)
+		res.status(400).send(`400 - Bad Request: invalid repository name`)
 		return
 	}
 
@@ -61,7 +61,7 @@ app.get('/home/repo', async (req: Request, res: Response) => {
 			[callbackId, 'pending', repoFullName, emailStr, templateId]
 		)
 	} catch (e) {
-		res.send(`500 - Internal Server Error - ${e}`)
+		res.status(400).send(`500 - Internal Server Error - ${e}`)
 		return
 	}
 
@@ -70,14 +70,14 @@ app.get('/home/repo', async (req: Request, res: Response) => {
 
 app.post('/callback/:id', async (req: Request, res: Response) => {
 	if (!req.params.id) {
-		res.send(`400 - Bad Request: callbackId is required`)
+		res.status(400).send(`400 - Bad Request: callbackId is required`)
 		return
 	}
 
 	const reqBody = JSON.parse(decodeURIComponent(req.body))
 
 	if (!reqBody.claims || !reqBody.claims.length) {
-		res.send(`400 - Bad Request: claims are required`)
+		res.status(400).send(`400 - Bad Request: claims are required`)
 		return
 	}
 
@@ -90,11 +90,11 @@ app.post('/callback/:id', async (req: Request, res: Response) => {
 			[callbackId]
 		)
 		if (results.rows.length === 0) {
-			res.send(`404 - Not Found: callbackId not found`)
+			res.status(404).send(`404 - Not Found: callbackId not found`)
 			return
 		}
 	} catch (e) {
-		res.send(`500 - Internal Server Error - ${e}`)
+		res.status(500).send(`500 - Internal Server Error - ${e}`)
 		return
 	}
 
@@ -104,7 +104,7 @@ app.post('/callback/:id', async (req: Request, res: Response) => {
 			[JSON.stringify(claims), 'verified', callbackId]
 		)
 	} catch (e) {
-		res.send(`500 - Internal Server Error - ${e}`)
+		res.status(500).send(`500 - Internal Server Error - ${e}`)
 		return
 	}
 
@@ -115,7 +115,7 @@ app.get('/status/:callbackId', async (req: Request, res: Response) => {
 	let statuses
 
 	if (!req.params.callbackId) {
-		res.send(`400 - Bad Request: callbackId is required`)
+		res.status(400).send(`400 - Bad Request: callbackId is required`)
 		return
 	}
 
@@ -127,11 +127,11 @@ app.get('/status/:callbackId', async (req: Request, res: Response) => {
 			[callbackId]
 		)
 		if (results.rows.length === 0) {
-			res.send(`404 - Not Found: callbackId not found`)
+			res.status(404).send(`404 - Not Found: callbackId not found`)
 			return
 		}
 	} catch (e) {
-		res.send(`500 - Internal Server Error - ${e}`)
+		res.status(500).send(`500 - Internal Server Error - ${e}`)
 		return
 	}
 
@@ -141,7 +141,7 @@ app.get('/status/:callbackId', async (req: Request, res: Response) => {
 			[callbackId]
 		)
 	} catch (e) {
-		res.send(`500 - Internal Server Error - ${e}`)
+		res.status(500).send(`500 - Internal Server Error - ${e}`)
 		return
 	}
 

@@ -66,6 +66,9 @@ function App() {
 
 	const proveIt = async (input: Inputs) => {
 		const response = await getCallback(input)
+		if(response.statusText !== 'OK') {
+			throw new Error('Something went wrong')
+		}
 		setCallbackId(response.data.callbackId)
 		setCallbackUrl(response.data.url)
 		setLoading(true)
