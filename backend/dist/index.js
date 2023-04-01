@@ -34,15 +34,15 @@ app.get('/', (req, res) => {
     res.send('works!');
 });
 app.get('/home/repo', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { repo, email } = req.params;
+    const { repo, email } = req.query;
     if (!repo || !email) {
-        res.send(`400 - Bad Request: repository name and email are required`);
+        res.status(400).send(`400 - Bad Request: repo and email are required`);
         return;
     }
     const repoFullName = repo;
     const emailStr = email;
     if (!isValidRepo(repoFullName)) {
-        res.send(`400 - Bad Request: invalid repository name`);
+        res.status(400).send(`400 - Bad Request: invalid repository name`);
         return;
     }
     const callbackId = 'repo-' + (0, reclaim_sdk_1.generateUuid)();
@@ -60,19 +60,19 @@ app.get('/home/repo', (req, res) => __awaiter(void 0, void 0, void 0, function* 
         yield pool.query('INSERT INTO submitted_links (callback_id, status, repo, email, template_id) VALUES ($1, $2, $3, $4)', [callbackId, 'pending', repoFullName, emailStr, templateId]);
     }
     catch (e) {
-        res.send(`500 - Internal Server Error - ${e}`);
+        res.status(400).send(`500 - Internal Server Error - ${e}`);
         return;
     }
     res.json({ url, callbackId });
 }));
 app.post('/callback/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.params.id) {
-        res.send(`400 - Bad Request: callbackId is required`);
+        res.status(400).send(`400 - Bad Request: callbackId is required`);
         return;
     }
     const reqBody = JSON.parse(decodeURIComponent(req.body));
     if (!reqBody.claims || !reqBody.claims.length) {
-        res.send(`400 - Bad Request: claims are required`);
+        res.status(400).send(`400 - Bad Request: claims are required`);
         return;
     }
     const callbackId = req.params.id;
@@ -80,19 +80,19 @@ app.post('/callback/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const results = yield pool.query('SELECT callback_id FROM submitted_links WHERE callback_id = $1', [callbackId]);
         if (results.rows.length === 0) {
-            res.send(`404 - Not Found: callbackId not found`);
+            res.status(404).send(`404 - Not Found: callbackId not found`);
             return;
         }
     }
     catch (e) {
-        res.send(`500 - Internal Server Error - ${e}`);
+        res.status(500).send(`500 - Internal Server Error - ${e}`);
         return;
     }
     try {
         yield pool.query('UPDATE submitted_links SET claims = $1, status = $2 WHERE callback_id = $3;', [JSON.stringify(claims), 'verified', callbackId]);
     }
     catch (e) {
-        res.send(`500 - Internal Server Error - ${e}`);
+        res.status(500).send(`500 - Internal Server Error - ${e}`);
         return;
     }
     res.send(`<h3>Success!</h3>`);
@@ -101,26 +101,26 @@ app.get('/status/:callbackId', (req, res) => __awaiter(void 0, void 0, void 0, f
     var _a;
     let statuses;
     if (!req.params.callbackId) {
-        res.send(`400 - Bad Request: callbackId is required`);
+        res.status(400).send(`400 - Bad Request: callbackId is required`);
         return;
     }
     const callbackId = req.params.callbackId;
     try {
         const results = yield pool.query('SELECT callback_id FROM submitted_links WHERE callback_id = $1', [callbackId]);
         if (results.rows.length === 0) {
-            res.send(`404 - Not Found: callbackId not found`);
+            res.status(404).send(`404 - Not Found: callbackId not found`);
             return;
         }
     }
     catch (e) {
-        res.send(`500 - Internal Server Error - ${e}`);
+        res.status(500).send(`500 - Internal Server Error - ${e}`);
         return;
     }
     try {
         statuses = yield pool.query('SELECT status FROM submitted_links WHERE callback_id = $1', [callbackId]);
     }
     catch (e) {
-        res.send(`500 - Internal Server Error - ${e}`);
+        res.status(500).send(`500 - Internal Server Error - ${e}`);
         return;
     }
     res.json({ status: (_a = statuses === null || statuses === void 0 ? void 0 : statuses.rows[0]) === null || _a === void 0 ? void 0 : _a.status });
