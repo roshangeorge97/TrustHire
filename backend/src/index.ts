@@ -23,10 +23,6 @@ const isValidRepo = (repoStr: string) => {
 	return repoStr.indexOf('/') > -1 && repoStr.split('/').length === 2
 }
 
-app.get('/', (req: Request, res: Response) => {
-	res.send('works!')
-})
-
 app.get('/home/repo', async (req: Request, res: Response) => {
 	const { repo, email } = req.query
 	if (!repo || !email) {
@@ -154,7 +150,21 @@ app.post('/callback/:id', async (req: Request, res: Response) => {
 		return
 	}
 
-	res.send(`<h3>Success!</h3>`)
+	res.send(`<div
+	style="
+	  width: 100%;
+	  height: 100%;
+	  display: flex;
+	  text-align: center;
+	  justify-content: center;
+	  align-items: center;
+	"
+  >
+	<h1>
+	  Submitted claim successfully! You are eligible for Super Swags from
+	  Questbook
+	</h1>
+  </div>`)
 })
 
 process.on('uncaughtException', function (err) {
