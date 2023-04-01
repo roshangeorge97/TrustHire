@@ -68,49 +68,6 @@ app.get('/home/repo', async (req: Request, res: Response) => {
 	res.json({ url, callbackId })
 })
 
-app.post('/callback/:id', async (req: Request, res: Response) => {
-	if (!req.params.id) {
-		res.status(400).send(`400 - Bad Request: callbackId is required`)
-		return
-	}
-
-	const reqBody = JSON.parse(decodeURIComponent(req.body))
-
-	if (!reqBody.claims || !reqBody.claims.length) {
-		res.status(400).send(`400 - Bad Request: claims are required`)
-		return
-	}
-
-	const callbackId = req.params.id
-	const claims = { claims: reqBody.claims }
-
-	try {
-		const results = await pool.query(
-			'SELECT callback_id FROM submitted_links WHERE callback_id = $1',
-			[callbackId]
-		)
-		if (results.rows.length === 0) {
-			res.status(404).send(`404 - Not Found: callbackId not found`)
-			return
-		}
-	} catch (e) {
-		res.status(500).send(`500 - Internal Server Error - ${e}`)
-		return
-	}
-
-	try {
-		await pool.query(
-			'UPDATE submitted_links SET claims = $1, status = $2 WHERE callback_id = $3;',
-			[JSON.stringify(claims), 'verified', callbackId]
-		)
-	} catch (e) {
-		res.status(500).send(`500 - Internal Server Error - ${e}`)
-		return
-	}
-
-	res.send(`<h3>Success!</h3>`)
-})
-
 app.get('/status/:callbackId', async (req: Request, res: Response) => {
 	let statuses
 
@@ -146,6 +103,58 @@ app.get('/status/:callbackId', async (req: Request, res: Response) => {
 	}
 
 	res.json({ status: statuses?.rows[0]?.status })
+})
+
+app.use(express.text())
+
+app.post('/callback/:id', async (req: Request, res: Response) => {
+	if (!req.params.id) {
+		res.status(400).send(`400 - Bad Request: callbackId is required`)
+		return
+	}
+
+	if (!req.body) {
+		res.status(400).send(`400 - Bad Request: body is required`)
+		return
+	}
+
+	const reqBody = JSON.parse(decodeURIComponent(req.body))
+
+	if (!reqBody.claims || !reqBody.claims.length) {
+		res.status(400).send(`400 - Bad Request: claims are required`)
+		return
+	}
+
+	const callbackId = req.params.id
+
+	const claims = { claims: reqBody.claims }
+
+	try {
+		const results = await pool.query(
+			'SELECT * FROM submitted_links WHERE callback_id = $1',
+			[callbackId]
+		)
+
+		if (results.rows.length === 0) {
+			res.status(404).send(`404 - Not Found: callbackId not found`)
+			return
+		}
+	} catch (e) {
+		res.status(500).send(`500 - Internal Server Error - ${e}`)
+		return
+	}
+
+	try {
+		await pool.query(
+			'UPDATE submitted_links SET claims = $1, status = $2 WHERE callback_id = $3;',
+			[JSON.stringify(claims), 'verified', callbackId]
+		)
+	} catch (e) {
+		res.status(500).send(`500 - Internal Server Error - ${e}`)
+		return
+	}
+
+	res.send(`<h3>Success!</h3>`)
 })
 
 process.on('uncaughtException', function (err) {
