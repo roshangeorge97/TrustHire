@@ -93,7 +93,8 @@ app.get('/status/:callbackId', (req, res) => __awaiter(void 0, void 0, void 0, f
     }
     res.json({ status: (_a = statuses === null || statuses === void 0 ? void 0 : statuses.rows[0]) === null || _a === void 0 ? void 0 : _a.status });
 }));
-app.use(express_1.default.text());
+// app.use(express.urlencoded({ extended: true })
+app.use(express_1.default.text({ type: "*/*" }));
 app.post('/callback/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.params.id) {
         res.status(400).send(`400 - Bad Request: callbackId is required`);
@@ -103,8 +104,11 @@ app.post('/callback/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.status(400).send(`400 - Bad Request: body is required`);
         return;
     }
+    console.log("req.body", typeof req.body, req.body);
     const reqBody = JSON.parse(decodeURIComponent(req.body));
+    console.log("reqBody", typeof reqBody, reqBody);
     if (!reqBody.claims || !reqBody.claims.length) {
+        console.log("yay");
         res.status(400).send(`400 - Bad Request: claims are required`);
         return;
     }
