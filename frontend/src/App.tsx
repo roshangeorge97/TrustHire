@@ -44,13 +44,17 @@ function App() {
 		e.preventDefault()
 		const repoFullName = extractGitHubRepoPath(input.repoLink)
 		if (!repoFullName) return toast.error('Invalid repository link')
-		proveIt(repoFullName).catch((e) => console.log(handleError(e)))
+		proveIt(input).catch((e) => console.log(handleError(e)))
 	}
 
-	const getCallback = async (repo: string) => {
+	const getCallback = async (input: Inputs) => {
+		const params ={
+			email: input.email,
+			repo: extractGitHubRepoPath(input.repoLink)
+		}
 		return toast.promise(
 			axios.get(getCallbackUrl + '/repo', {
-				params: { repo },
+				params,
 			}),
 			{
 				loading: 'Loading..',
@@ -60,8 +64,8 @@ function App() {
 		)
 	}
 
-	const proveIt = async (repo: string) => {
-		const response = await getCallback(repo)
+	const proveIt = async (input: Inputs) => {
+		const response = await getCallback(input)
 		setCallbackId(response.data.callbackId)
 		setCallbackUrl(response.data.url)
 		setLoading(true)

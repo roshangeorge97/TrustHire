@@ -28,11 +28,17 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.get('/home/repo', async (req: Request, res: Response) => {
-	const { repo } = req.query
+	const { repo, email } = req.params
+	if (!repo || !email) {
+		res.send(`400 - Bad Request: repository name and email are required`)
+		return
+	}
 	const repoFullName = repo as string
+	const emailStr = email as string
 
 	if (!isValidRepo(repoFullName)) {
-		throw new Error('Invalid repo')
+		res.send(`400 - Bad Request: invalid repository name`)
+		return
 	}
 
 	const callbackId = 'repo-' + generateUuid()
@@ -51,8 +57,8 @@ app.get('/home/repo', async (req: Request, res: Response) => {
 
 	try {
 		await pool.query(
-			'INSERT INTO submitted_links (callback_id, status, repo, template_id) VALUES ($1, $2, $3, $4)',
-			[callbackId, 'pending', repoFullName, templateId]
+			'INSERT INTO submitted_links (callback_id, status, repo, email, template_id) VALUES ($1, $2, $3, $4)',
+			[callbackId, 'pending', repoFullName, emailStr, templateId]
 		)
 	} catch (e) {
 		res.send(`500 - Internal Server Error - ${e}`)
