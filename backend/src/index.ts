@@ -68,13 +68,15 @@ app.post('/callback/:id', async (req: Request, res: Response) => {
 		return
 	}
 
-	if (!req.body.claims) {
+	const reqBody = JSON.parse(decodeURIComponent(req.body))
+
+	if (!reqBody.claims || !reqBody.claims.length) {
 		res.send(`400 - Bad Request: claims are required`)
 		return
 	}
 
-	const callbackId = req.body.id
-	const claims = { claims: req.body.claims }
+	const callbackId = req.params.id
+	const claims = { claims: reqBody.claims }
 
 	try {
 		const results = await pool.query(
@@ -100,7 +102,7 @@ app.post('/callback/:id', async (req: Request, res: Response) => {
 		return
 	}
 
-	res.send('200 - OK')
+	res.send(`<h3>Success!</h3>`)
 })
 
 app.get('/status/:callbackId', async (req: Request, res: Response) => {
