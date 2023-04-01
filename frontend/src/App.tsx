@@ -96,7 +96,7 @@ function App() {
 		<>
 			<div className="App">
 				<header className="App-header bg-[#282c34]">
-					<h1>Prove that you've contributed to a github repo</h1>
+					<h1 className='mb-4'>Prove that you've contributed to a github repo</h1>
 
 					{!callbackUrl ? (
 						<>
@@ -143,7 +143,7 @@ function App() {
 					)}
 
 					{status === 'verified' ? (
-						<h3>Thanks for submitting your link!</h3>
+						<h2 className='mt-4'>Thanks for submitting your link!</h2>
 					) : loading ? (
 						<>
 							<div className="loader"></div>
