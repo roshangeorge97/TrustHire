@@ -99,22 +99,19 @@ app.post('/callback/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.status(400).send(`400 - Bad Request: callbackId is required`);
         return;
     }
-    console.log('req.body', req.params.id);
     if (!req.body) {
         res.status(400).send(`400 - Bad Request: body is required`);
         return;
     }
-    console.log('req.body', req.body);
     const reqBody = JSON.parse(decodeURIComponent(req.body));
     if (!reqBody.claims || !reqBody.claims.length) {
         res.status(400).send(`400 - Bad Request: claims are required`);
         return;
     }
     const callbackId = req.params.id;
-    console.log("callbackId", callbackId);
     const claims = { claims: reqBody.claims };
     try {
-        const results = yield pool.query('SELECT * FROM submitted_links WHERE callback_id = $1', [JSON.stringify(callbackId)]);
+        const results = yield pool.query('SELECT * FROM submitted_links WHERE callback_id = $1', [callbackId]);
         if (results.rows.length === 0) {
             res.status(404).send(`404 - Not Found: callbackId not found`);
             return;
