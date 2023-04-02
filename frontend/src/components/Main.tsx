@@ -11,7 +11,6 @@ const getCallbackUrl = process.env.REACT_APP_BACKEND_BASE_URL + '/home'
 const statusUrl = process.env.REACT_APP_BACKEND_BASE_URL + '/status'
 
 export default function Main() {
-	const [callbackUrl, setCallbackUrl] = useState<string | null>(null)
 	const [callbackId, setCallbackId] = useState<string | null>(null)
 	const [status, setStatus] = useState<string | null>(null)
 	const [appUrl, setAppUrl] = useState<string | null>(null)
@@ -44,7 +43,6 @@ export default function Main() {
 			throw new Error('Something went wrong')
 		}
 		setCallbackId(response.data.callbackId)
-		setCallbackUrl(response.data.url)
 		setAppUrl(response.data.url)
 	}
 
