@@ -1,0 +1,11 @@
+@font-face {
+	font-family: 'Agrandir';
+	src: local('Agrandir'),
+		url('./assets/fonts/Agrandir/Agrandir-Regular.otf') format('otf');
+}
+
+@font-face {
+	font-family: 'AgrandirGrandHeavy';
+	src: local('AgrandirGrandHeavy'),
+		url('./assets/fonts/Agrandir/Agrandir-GrandHeavy.otf') format('otf');
+}
