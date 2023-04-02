@@ -39,7 +39,7 @@ app.get('/home/repo', async (req: Request, res: Response) => {
 
 	const callbackId = 'repo-' + generateUuid()
 	const template = (
-		await reclaim.getConsent('Github-contributor', [
+		await reclaim.connect('Github-contributor', [
 			{
 				provider: 'github-contributor',
 				params: {
