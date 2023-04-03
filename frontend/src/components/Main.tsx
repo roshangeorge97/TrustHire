@@ -72,7 +72,7 @@ export default function Main() {
 					</h3>
 				</div>
 				<div className="mb-12">
-					<h3 className="text-xl text-white text-opacity-70">
+					<h3 className="text-xl font-Fredoka text-white text-opacity-70">
 						Show your Github and earn goodies, and gifts.{' '}
 					</h3>
 				</div>
