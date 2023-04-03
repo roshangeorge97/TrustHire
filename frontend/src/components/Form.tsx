@@ -42,7 +42,7 @@ const Form = ({ proveIt }: FormProps) => {
 				onChange={handleChange}
 				value={input.email}
 				placeholder="Your student email id"
-				className="w-full px-5 py-3 bg-white text-offBlack rounded-xl"
+				className="w-full px-5 py-5 lg:py-3 bg-white text-offBlack rounded-xl"
 			/>
 			<input
 				name="repoLink"
@@ -50,12 +50,12 @@ const Form = ({ proveIt }: FormProps) => {
 				onChange={handleChange}
 				value={input.repoLink}
 				placeholder="GitHub repo link"
-				className="w-full px-5 py-3 bg-white text-offBlack rounded-xl"
+				className="w-full px-5 py-5 lg:py-3 bg-white text-offBlack rounded-xl"
 			/>
 
 			<button
 				type="submit"
-				className="py-4 mt-5 transition-colors ease-in bg-yellow px-9 rounded-xl hover:bg-opacity-70"
+				className="py-5 lg:py-4 mt-5 transition-colors ease-in bg-yellow px-9 rounded-xl hover:shadow-lg"
 			>
 				Claim your swag!
 			</button>

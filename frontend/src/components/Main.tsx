@@ -57,7 +57,7 @@ export default function Main() {
 	}, [callbackId])
 
 	return (
-		<div className="flex min-h-screen items-center w-full h-full max-w-90% lg:max-w-[70%] mx-auto justify-between gap-36 lg:gap-20 flex-col lg:flex-row md:p-10 max-w-full p-2 sm:p-10 py-20">
+		<div className="flex min-h-screen items-center w-full h-full max-w-90% lg:max-w-[70%] mx-auto justify-between gap-36 lg:gap-20 flex-col lg:flex-row flex-wrap  max-w-full p-2 lg:p-10 py-20">
 			<div className="flex flex-col items-center justify-center max-w-full m-auto text-center lg:text-start lg:items-start">
 				<Gift className="mb-10" />
 				<div>
@@ -79,11 +79,12 @@ export default function Main() {
 
 				{status === 'verified' ? (
 					<div className="mb-12">
-						<h3 className="text-xl text-white text-opacity-70">
-							Thanks for verification
+						<h3 className="text-3xl font-bold text-yellow">
+							<span className="opacity-100">🚀</span> Thanks for verification{' '}
+							<span className="opacity-100">🚀</span>
 						</h3>
 					</div>
-				) : appUrl ? (
+				) : appUrl && callbackId ? (
 					<QrMessage appUrl={appUrl} />
 				) : (
 					<Form proveIt={proveIt} />
