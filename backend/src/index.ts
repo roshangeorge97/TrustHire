@@ -8,7 +8,7 @@ dotenv.config()
 
 const app: Express = express()
 const port = process.env.PORT || 8000
-const callbackUrl = process.env.CALLBACK_URL! + '/' + 'callback/'
+const callbackUrl = 'http://192.168.240.222:8000' + '/' + 'callback/'
 
 app.use(express.json())
 app.use(cors())

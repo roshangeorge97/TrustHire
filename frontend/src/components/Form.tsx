@@ -30,6 +30,7 @@ const Form = ({ proveIt }: FormProps) => {
 		if (!repoFullName) return toast.error('Invalid repository link')
 		proveIt(input).catch((e) => console.log(handleError(e)))
 	}
+
 	return (
 		<form
 			onSubmit={onSubmit}
@@ -41,7 +42,7 @@ const Form = ({ proveIt }: FormProps) => {
 				required
 				onChange={handleChange}
 				value={input.email}
-				placeholder="Your student email id"
+				placeholder="Your E-mail id"
 				className="w-full px-5 py-5 lg:py-3 bg-white text-offBlack rounded-xl"
 			/>
 			<input
@@ -57,7 +58,7 @@ const Form = ({ proveIt }: FormProps) => {
 				type="submit"
 				className="py-5 lg:py-4 mt-5 transition-colors ease-in bg-yellow px-9 rounded-xl hover:shadow-lg"
 			>
-				Claim your swag!
+				Generate Link!
 			</button>
 		</form>
 	)

@@ -4,11 +4,15 @@ import toast from 'react-hot-toast'
 import { extractGitHubRepoPath, handleError } from '../utils'
 import Form, { Inputs } from './Form'
 import QrMessage from './QrMessage'
-import Device from './static/Device'
 import Gift from './static/Svg/Gift'
+import image from './static/Svg/undraw_online_cv_re_gn0a.svg'
+import screen1 from './static/Svg/screen1.jpg'
+import screen2 from './static/Svg/screen2.jpg'
+import screen3 from './static/Svg/screen3.jpg'
 
-const getCallbackUrl = process.env.REACT_APP_BACKEND_BASE_URL + '/home'
-const statusUrl = process.env.REACT_APP_BACKEND_BASE_URL + '/status'
+
+const getCallbackUrl = 'http://192.168.240.222:8000' + '/home'
+const statusUrl = 'http://192.168.240.222:8000' + '/status'
 
 export default function Main() {
 	const [callbackId, setCallbackId] = useState<string | null>(null)
@@ -57,23 +61,22 @@ export default function Main() {
 	}, [callbackId])
 
 	return (
-		<div className="flex min-h-screen items-center w-full h-full max-w-90% lg:max-w-[70%] mx-auto justify-between gap-36 lg:gap-20 flex-col lg:flex-row flex-wrap  max-w-full p-2 lg:p-10 py-20">
-			<div className="flex flex-col items-center justify-center max-w-full m-auto text-center lg:text-start lg:items-start">
-				<Gift className="mb-10" />
+		<div className="flex  w-full h-full p-2 lg:p-10 py-20">
+			<div className="flex flex-col  items-center justify-center max-w-full m-auto text-center lg:text-start lg:items-start">
 				<div className="break-all">
-					<h3 className="text-yellow font-AgrandirGrandHeavy leading-[62px] font-extrabold text-5xl">
-						Swags
+					<h3 className="text-yellow  leading-[62px] font-extrabold text-5xl">
+						Show off your
 					</h3>
-					<h3 className="text-white font-AgrandirGrandHeavy leading-[62px] font-extrabold text-5xl">
-						for dev
+					<h3 className="text-white  leading-[62px] font-extrabold text-5xl">
+						projects
 					</h3>
-					<h3 className="text-white font-AgrandirGrandHeavy leading-[62px] font-extrabold text-5xl">
-						contributions
+					<h3 className="text-white  leading-[62px] font-extrabold text-5xl">
+						in a unique way to the recruitors!
 					</h3>
 				</div>
 				<div className="mb-12">
-					<h3 className="text-xl font-Fredoka text-white text-opacity-70">
-						Show your Github and earn goodies, and gifts.{' '}
+					<h3 className="text-xl text-white text-opacity-70">
+						your entire resume in one place!{' '}
 					</h3>
 				</div>
 
@@ -92,7 +95,7 @@ export default function Main() {
 			</div>
 
 			<div className="max-w-full m-auto">
-				<Device />
+				<img src={image} className="w-64" />
 			</div>
 		</div>
 	)

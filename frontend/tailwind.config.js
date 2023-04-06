@@ -9,8 +9,9 @@ module.exports = {
 				Fredoka: ['Fredoka', 'sans-serif'],
 			},
 			colors: {
-				yellow: '#FFE400',
+				yellow: '#F5B82E',
 				offBlack: '#181B1D',
+				blue:'#0D00A4',
 			},
 		},
 	},
