@@ -10,9 +10,8 @@ import screen1 from './static/Svg/screen1.jpg'
 import screen2 from './static/Svg/screen2.jpg'
 import screen3 from './static/Svg/screen3.jpg'
 
-
-const getCallbackUrl = 'http://192.168.240.222:8000' + '/home'
-const statusUrl = 'http://192.168.240.222:8000' + '/status'
+const getCallbackUrl = 'http://192.168.157.222:8000' + '/home'
+const statusUrl = 'http://192.168.157.222:8000' + '/status'
 
 export default function Main() {
 	const [callbackId, setCallbackId] = useState<string | null>(null)
