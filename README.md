@@ -24,6 +24,10 @@ TrustHire is built with the following technologies:
 - Automatically verify your contributions and projects to ensure they were done by you.
 - Get a link that you can share with your recruiters to showcase your verified work.
 
+## Docs of Reclaim Protocol
+
+ [Reclaim Protocol Whitepaper](https://docs.reclaimprotocol.org/whitepaper-and-how-reclaim-protocol-works)
+
 ## Getting Started
 
 To get started with TrustHire, follow these steps:
