@@ -1,4 +1,4 @@
-# TrustHire
+# TrustHire 
 TrustHire is a platform designed for job seekers to showcase their skills, open-source projects, and other works to recruiters in a more convenient and trustworthy manner. TrustHire automatically verifies your contributions and projects to ensure they were done by you. As a result, it provides you with a link that you can share with your recruiters.
 
 ## Screenshots
